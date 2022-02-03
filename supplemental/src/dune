@@ -1,0 +1,7 @@
+(library
+ (name supplemental)
+ (libraries camlrack)
+ (modules bool
+          bool2
+          arith)
+ (preprocess (pps ppx_camlrack)))
