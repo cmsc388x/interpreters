@@ -271,8 +271,8 @@ type ty =
      -----  T-B
      b : B
 
-      -----  T-I
-      z : I
+     -----  T-I
+     z : I
 
    These rules say: "any Boolean value [b] has type [B]" and "any integer value
    [z] has type [I]". This may seem obvious, but it is important that we always
