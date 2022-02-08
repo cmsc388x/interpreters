@@ -74,7 +74,7 @@ open Camlrack.ListConvenienceFunctions
    later on. *)
 
 (** The type of expressions. *)
-type exp = | T | F | Int of int | Not of exp | BinOp of binop * exp * exp
+type exp = | T | F | Integer of int | Not of exp | BinOp of binop * exp * exp
 
 (** The type of binary operators. *)
 and binop = | And | Or | Add
@@ -86,7 +86,7 @@ let parse (s : string) : exp option =
     match%spat se with
     | "T" -> T
     | "F" -> F
-    | "INTEGER" -> Int (sexp_to_int se)
+    | "INTEGER" -> Integer (sexp_to_int se)
     | "(not ANY)" ->
       Not (parse' (second (sexp_to_list se)))
     | "(ANY SYMBOL ANY)" ->
@@ -114,7 +114,7 @@ let rec string_of_exp (a : exp) : string =
   match a with
   | T -> "T"
   | F -> "F"
-  | Int z -> string_of_int z
+  | Integer z -> string_of_int z
   | Not e -> "(not " ^ string_of_exp e ^ ")"
   | BinOp (o, l, r) -> "(" ^ string_of_op o ^
                        " " ^ string_of_exp l ^
@@ -136,11 +136,11 @@ let exp_of_ocaml_bool (b : bool) : exp =
 (** Converts an [exp] to an OCaml [int]. *)
 let ocaml_int_of_exp (a : exp) : int =
   match a with
-  | Int z -> z
+  | Integer z -> z
   | _ -> failwith "ocaml_int_of_int: invalid term"
 
 (** Converts an OCaml [int] to an [exp]. *)
-let exp_of_ocaml_int (z : int) : exp = Int z
+let exp_of_ocaml_int (z : int) : exp = Integer z
 
 (** Determines whether an expression is actually a Boolean value. *)
 let is_bool (a : exp) : bool =
@@ -151,7 +151,7 @@ let is_bool (a : exp) : bool =
 (** Determines whether an expression is actually an integer value. *)
 let is_int (a : exp) : bool =
   match a with
-  | Int _ -> true
+  | Integer _ -> true
   | _ -> false
 
 (** Determines whether an expression is a value. *)
@@ -236,8 +236,8 @@ let rec multistep (k : int) (a : exp) : exp =
    then you add extra types on top of those as needed. We don't have any need
    for complex types yet, so we can define our types very simply:
 
-     T ::= B
-        |  I
+     T ::= Bool
+        |  Int
 
    Let's go ahead an implement that in code before we proceed. *)
 
@@ -246,8 +246,8 @@ let rec multistep (k : int) (a : exp) : exp =
    full name [type] because that is a keyword in OCaml. Other options might be
    [_type], [typ], or [t], but I like [ty] the best. *)
 type ty =
-  | B
-  | I
+  | Bool
+  | Int
 
 (* Previously, we established that type-checking is a static analysis, and that
    a static analysis is a function that takes a program (or expression) as input
@@ -268,40 +268,40 @@ type ty =
    First, we'll write a couple axioms, as those are the most straightforward
    rules:
 
-     -----  T-B
-     b : B
+     --------  T-Bool
+     b : Bool
 
-     -----  T-I
-     z : I
+      -------  T-Int
+      z : Int
 
-   These rules say: "any Boolean value [b] has type [B]" and "any integer value
-   [z] has type [I]". This may seem obvious, but it is important that we always
-   write down explicit rules for everything when we are trying to provide a
-   formal definition of a language.
+   These rules say: "any Boolean value [b] has type [Bool]" and "any integer
+   value [z] has type [Int]". This may seem obvious, but it is important that we
+   always write down explicit rules for everything when we are trying to provide
+   a formal definition of a language.
 
    Now that we have these basic rules, we can add rules for our other forms of
    expressions:
 
-          e : B
-       -----------     T-Not
-       (not e) : B
+            e : Bool
+         --------------      T-Not
+         (not e) : Bool
 
-     e1 : B    e2 : B
-     ----------------  T-And
-      (e1 and e2) : B
+     e1 : Bool    e2 : Bool
+     ----------------------  T-And
+       (e1 and e2) : Bool
 
-     e1 : B    e2 : B
-     ----------------  T-Or
-      (e1 or e2) : B
+     e1 : Bool    e2 : Bool
+     ----------------------  T-Or
+        (e1 or e2) : Bool
 
-     e1 : I    e2 : I
-     ----------------  T-Add
-       (e1 + e2) : I
+      e1 : Int    e2 : Int
+      --------------------   T-Add
+         (e1 + e2) : Int
 
    We can read these rules the same way we read the rules in an operational
    semantics. For example, T-Add says "an addition expression [(e1 + e2)] has
-   the type [I] if the first subterm [e1] has type [I] and the second subterm
-   [e2] has type [I]".
+   the type [Int] if the first subterm [e1] has type [Int] and the second
+   subterm [e2] has type [Int]".
 
    Now, we can implement our [typecheck] function using these rules in much the
    same way we implement our [step] function based on the operational semantics.
@@ -314,22 +314,22 @@ type ty =
 let rec typecheck (a : exp) : ty option =
   match a with
   (* Type-checking primitive values. *)
-  | T | F -> Some B
-  | Int _ -> Some I
+  | T | F -> Some Bool
+  | Integer _ -> Some Int
   (* Type-checking Boolean negation. *)
   | Not e ->
     (match typecheck e with
-     | Some B -> Some B
+     | Some Bool -> Some Bool
      | _ -> None)
   (* Type-checking binary Boolean operations. *)
   | BinOp (And, e1, e2) | BinOp (Or, e1, e2) ->
     (match typecheck e1, typecheck e2 with
-     | (Some B, Some B) -> Some B
+     | (Some Bool, Some Bool) -> Some Bool
      | _ -> None)
   (* Type-checking binary integer operations. *)
   | BinOp (Add, e1, e2) ->
     (match typecheck e1, typecheck e2 with
-     | (Some I, Some I) -> Some I
+     | (Some Int, Some Int) -> Some Int
      | _ -> None)
 
 (* And that's it --- that's the whole type-checking function!
@@ -368,10 +368,10 @@ module Tests = struct
   type test = (string * (ty * exp) option)
 
   let tests : test list =
-    [ ("3", Some (I, Int 3))
-    ; ("T", Some (B, T))
-    ; ("(1 + 1)", Some (I, Int 2))
-    ; ("(T and F)", Some (B, F))
+    [ ("3", Some (Int, Integer 3))
+    ; ("T", Some (Bool, T))
+    ; ("(1 + 1)", Some (Int, Integer 2))
+    ; ("(T and F)", Some (Bool, F))
     ; ("(1 + T)", None)
     ; ("(not (1 + T))", None)
     ]
