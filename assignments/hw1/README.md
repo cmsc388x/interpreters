@@ -51,16 +51,16 @@ at least 5 stars. (You are welcome to complete more!)
       subterms. The type-checker should verify that the two subterms have the
       same type, but it should not care what that type is.
 
-  8.  ☆☆: real numbers
+  8.  ☆: real numbers
 
       Add real number values ℝ and a corresponding addition form to the
       language. The floating-point addition operator should be written `+.`.
       (Hint: Use OCaml's floating-point type to approximate the values of real
       numbers.)
 
-  9.  ☆☆: integer to real number conversion [Prerequisite: 8]
+  9.  ☆: integer to real number conversion [Prerequisite: 8]
 
-      Add a `int->real` form to the language to convert integers to real
+      Add an `int->real` form to the language to convert integers to real
       numbers.
 
   10. ☆☆☆: implicit coercion [Prerequisite: 8 and 9]
