@@ -31,17 +31,17 @@ at least 5 stars. (You are welcome to complete more!)
 
       Implement semantic short-circuiting for `and` and `or`. (Hint: This will
       require re-writing the semantic rules for Boolean operator reduction.)
-  5.  ☆☆: `equal`
 
-      Add an `equal` binary operation form to the language. The `equal` form
-      should take two expressions as arguments and reduce to a Boolean value
-      indicating whether they are the same. (Note: This does not require both
-      branches to have the same type, so instances of different types should
-      always be considered unequal.)
+  5.  ☆☆: `numequal`
 
-  6.  ☆: syntactic sugar for `equal` [Prerequisite: 5]
+      Add a `numequal` binary operation form to the language. The `numequal`
+      form should take two integer expressions as arguments and reduce to a
+      Boolean value indicating whether they are the same. Note that
+      type-checking should ensure both subterms are integers.
 
-      Implement `equal` in the surface language as syntactic sugar (i.e.,
+  6.  ☆: syntactic sugar for `numequal` [Prerequisite: 5]
+
+      Implement `numequal` in the surface language as syntactic sugar (i.e.,
       without adding any corresponding form to the AST).
 
   7.  ☆☆: `if`
