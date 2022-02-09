@@ -17,7 +17,7 @@ This repository provides some interpreters for material covered in class.
 
     Interpreters we worked on with live coding in class.
 
-      * [`lec01.ml`](class/src/lec01.ml) --- February 9, 2022
+      * [`lec01.ml`](class/src/lec01.ml): February 9, 2022
 
   * [Supplemental](supplemental/)
 
