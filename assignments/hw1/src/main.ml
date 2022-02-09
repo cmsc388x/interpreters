@@ -1,6 +1,26 @@
 open Camlrack
 open Camlrack.ListConvenienceFunctions
 
+(** This type represents the available homework problems.
+
+    NOTE: DO NOT MODIFY THIS TYPE. *)
+type hw_item =
+  | XOR_and_NAND                (* Item  1 *)
+  | Syntactic_XOR_and_NAND      (* Item  2 *)
+  | Sub_and_Mul                 (* Item  3 *)
+  | Short_Circuiting            (* Item  4 *)
+  | Equal                       (* Item  5 *)
+  | Syntactic_Equal             (* Item  6 *)
+  | If                          (* Item  7 *)
+  | Real_Numbers                (* Item  8 *)
+  | Int_to_Real                 (* Item  9 *)
+  | Implicit_Coercion           (* Item 10 *)
+
+(** The homework problems you've completed.
+
+    TODO: Update this before you submit! This is how we know what to grade! *)
+let items_complete : hw_item list = []
+
 (** The type of expressions. *)
 type exp =
   | T | F

@@ -71,3 +71,11 @@ at least 5 stars. (You are welcome to complete more!)
       converted to a real number value. You must also update the type-checker so
       that it will correctly allow integer values as the arguments in a real
       number operation.
+
+
+## Submission
+
+Update the `items_complete` list in the code (near the top of the file --- it's
+marked with a `TODO` comment) to indicate which of the above problems you want
+to be graded on. Only submit the `main.ml` file. Your file must compile without
+errors for full credit.
