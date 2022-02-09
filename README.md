@@ -2,7 +2,25 @@
 
 This repository provides some interpreters for material covered in class.
 
+  * [Assignments](assignments/)
+
+      * [Homework 1](assignments/hw1/)
+
+        You are given a working interpreter, and must extend it with additional
+        functionality.
+
+        Assigned: February 9, 2022
+
+        Due: before class begins on February 23, 2022
+
+  * [Class](class/)
+
+    Interpreters we worked on with live coding in class.
+
+      * [`lec01.ml`](class/src/lec01.ml) --- February 9, 2022
+
   * [Supplemental](supplemental/)
+
       * [`bool.ml`](supplemental/src/bool.ml)
 
         An interpreter for a simple Boolean algebra language. It covers:
