@@ -70,7 +70,7 @@ type exp =
   (* For our implementation, we use OCaml's notion of integers. Although this is
      technically only an approximation of the actual set of integers ℤ, it will
      suffice for our needs. *)
-  | Int of int
+  | Integer of int
 
 (** The type of binary operators. *)
 and binop =
@@ -90,7 +90,7 @@ let parse (s : string) : exp =
     | "F" -> F
     (* We add a case for parsing integers. Fortunately for us, Camlrack already
        knows how to distinguish integers from other values! *)
-    | "INTEGER" -> Int (sexp_to_int se)
+    | "INTEGER" -> Integer (sexp_to_int se)
     | "(not ANY)" ->
       Not (parse' (second (sexp_to_list se)))
     | "(if ANY then ANY else ANY)" ->
@@ -123,7 +123,7 @@ let rec string_of_exp (a : exp) : string =
   match a with
   | T -> "T"
   | F -> "F"
-  | Int z -> string_of_int z
+  | Integer z -> string_of_int z
   | Not e -> "(not " ^ string_of_exp e ^ ")"
   | If (cond, thn, els) -> "(if " ^ string_of_exp cond ^
                            " then " ^ string_of_exp thn ^
@@ -171,11 +171,11 @@ let exp_of_ocaml_bool (b : bool) : exp =
 (** Converts an [exp] to an OCaml [int]. *)
 let ocaml_int_of_exp (a : exp) : int =
   match a with
-  | Int z -> z
+  | Integer z -> z
   | _ -> failwith "ocaml_int_of_int: invalid term"
 
 (** Converts an OCaml [int] to an [exp]. *)
-let exp_of_ocaml_int (z : int) : exp = Int z
+let exp_of_ocaml_int (z : int) : exp = Integer z
 
 (* We will also revise our [is_value] function. To do this, we will define two
    separate functions to check whether an expression is a Boolean or an integer,
@@ -190,7 +190,7 @@ let is_bool (a : exp) : bool =
 (** Determines whether an expression is actually an integer value. *)
 let is_int (a : exp) : bool =
   match a with
-  | Int _ -> true
+  | Integer _ -> true
   | _ -> false
 
 (** Determines whether an expression is a value. *)
@@ -289,11 +289,11 @@ module Tests = struct
   type test = (string * exp)
 
   let tests : test list =
-    [ ("3", Int 3)
-    ; ("-42", Int (-42))
-    ; ("(1 + 3)", Int 4)
-    ; ("(1 + T)", BinOp (Add, Int 1, T))
-    ; ("(4 or 5)", BinOp (Or, Int 4, Int 5))
+    [ ("3", Integer 3)
+    ; ("-42", Integer (-42))
+    ; ("(1 + 3)", Integer 4)
+    ; ("(1 + T)", BinOp (Add, Integer 1, T))
+    ; ("(4 or 5)", BinOp (Or, Integer 4, Integer 5))
     ]
 
   let max_steps = 5

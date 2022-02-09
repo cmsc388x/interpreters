@@ -34,6 +34,14 @@ This repository provides some interpreters for material covered in class.
           * A little on operational semantics.
           * A discussion on what it means for a term to get "stuck".
 
+      * [`types.ml`](supplemental/src/types.ml)
+
+        A slightly modified version of the language defined in `arith.ml` (`if`
+        is removed), with a type-checker. It covers:
+
+          * What type systems and type-checkers are.
+          * How to implement a simple type-checker.
+
 
 ## Interacting With the Code
 

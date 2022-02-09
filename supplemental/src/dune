@@ -3,5 +3,6 @@
  (libraries camlrack)
  (modules bool
           bool2
-          arith)
+          arith
+          types)
  (preprocess (pps ppx_camlrack)))
