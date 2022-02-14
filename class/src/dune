@@ -1,5 +1,6 @@
 (library
  (name class)
  (libraries camlrack)
- (modules lec01)
+ (modules lec01
+          lec02)
  (preprocess (pps ppx_camlrack)))
