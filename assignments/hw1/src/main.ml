@@ -223,7 +223,7 @@ let number_of_steps = 5
     the expression if there are no errors. *)
 let eval (s : string) : exp option =
   let e = parse s in
-  let t = Option.map typecheck e in
+  let t = Option.join (Option.map typecheck e) in
   Option.map (fun _ -> multistep number_of_steps (Option.get e)) t
 
 (** This module provides some test functions for the above interpreter. If you
@@ -252,7 +252,7 @@ module Tests = struct
     | None -> failwith ("run_test: could not parse input '" ^ input ^ "'")
     | Some e ->
       (match result with
-       | None -> assert (typecheck e = None)
+       | None -> assert (typecheck e = None && eval input = None)
        | Some (expected_type, expected_result) ->
          assert (typecheck e = Some expected_type &&
                  multistep max_steps e = expected_result &&
