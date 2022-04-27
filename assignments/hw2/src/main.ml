@@ -478,7 +478,10 @@ let typecheck (e : exp) : ty option =
                      (List.map (fun (x, t) -> "(" ^ x ^ ", " ^ string_of_type t ^ ")") g)));
     match e with
     | Val v -> typecheck_value v g
-    | Var x -> List.assoc x g
+    | Var x ->
+      (match List.assoc_opt x g with
+       | Some t -> t
+       | None -> failwith ("typecheck: invalid reference to free variable '" ^ x ^ "'"))
     (* TODO PART 3 *)
     | App (f, args) ->
       (* We require applications to have exactly as many arguments as there are
