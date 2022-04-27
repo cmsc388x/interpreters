@@ -43,7 +43,7 @@
 
         The functions you should implement are:
 
-            * [iszero] with constructor [IsZero], which takes an integer an
+            * [iszero] with constructor [IsZero], which takes an integer and
               reduces to a Boolean value representing whether that integer was
               zero.
 
@@ -544,6 +544,11 @@ let typecheck (e : exp) : ty option =
                       ║  CAPTURE-AVOIDING SUBSTITUTION  ║
                       ║                                 ║
                       ╚═════════════════════════════════╝
+
+   NOTE: What follows is a full description of the capture-avoiding substitution
+   algorithm for a multary lambda calculus. You don't need to read this to
+   complete the assignment; it's just to explain what this function is, since we
+   never discussed it in class.
 
    When performing substitution for application forms, a problem that can happen
    is you accidentally "capture" a variable that was meant to belong to a
