@@ -475,7 +475,7 @@ let typecheck (e : exp) : ty option =
     dwarn (delay ("typechecking..." ^
                    "\n  e: " ^ string_of_exp e ^
                    "\n  g: [" ^ String.concat "; "
-                     (List.map (fun (x, t) -> "(" ^ x ^ ", " ^ string_of_type t ^ ")") g)));
+                     (List.map (fun (x, t) -> "(" ^ x ^ ", " ^ string_of_type t ^ ")") g) ^ "]"));
     match e with
     | Val v -> typecheck_value v g
     | Var x ->
@@ -815,9 +815,10 @@ let step (e : exp) : exp option =
        | Add -> step_primitive_binary_function Add vargs int_extract int_extract (fun a b -> Int (a + b))
        (* TODO PART 2: Add rules for the new primitive functions here.
 
-          NOTE: There is no [step_primitive_ternary_function] function to use with
-          your [cond] form. You can choose to implement one, but you certainly
-          don't have to if you'd rather just implement it here directly. *)
+          NOTE: There is no [step_primitive_ternary_function] function to use
+          with your [if] form. You can choose to implement one, but you
+          certainly don't have to if you'd rather just implement it here
+          directly. *)
        (* Anything else is undefined! *)
        | _ -> failwith ("step: invalid subject of application: '" ^ string_of_value vf ^ "'"))
     | App (Val vf, args) -> App (Val vf, step_args args)
