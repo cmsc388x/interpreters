@@ -1,0 +1,5 @@
+(library
+ (name hw2)
+ (libraries camlrack)
+ (modules main)
+ (preprocess (pps ppx_camlrack)))
