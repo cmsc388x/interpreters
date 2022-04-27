@@ -552,7 +552,8 @@ let typecheck (e : exp) : ty option =
 
    When performing substitution for application forms, a problem that can happen
    is you accidentally "capture" a variable that was meant to belong to a
-   different lambda. For example, considering the following term:
+   different lambda. For example, consider the following term in the basic
+   (unary) lambda calculus:
 
        ((λ (x) (λ (y) (x y))) y)
 
@@ -573,23 +574,25 @@ let typecheck (e : exp) : ty option =
 
    Recall that we write substitutions using the notation:
 
-       e2[x/e1]
+       e_2[x/e_1]
 
    This means we are replacing occurrences of variable [x] occurring in
-   expression [e2] with expression [e1]. For most expressions [e2], substitution
-   is straightforward: we simply replace occurrences of the variable [x] with
-   the new expression [e1]. Where things get tricky is when [e2] is a lambda:
+   expression [e_2] with expression [e_1]. For most expressions [e_2],
+   substitution is straightforward: we simply replace occurrences of the
+   variable [x] with the new expression [e_1]. Where things get tricky is when
+   [e2] is a lambda (we're switching back to a multary lambda calculus, but
+   we'll leave out the type annotations since we don't need them right now):
 
-       (λ (p ...) eb)[x/ea]
+       (λ (p ...) e_b)[x/e_a]
 
    When we come to such a case, we have to follow these steps:
 
-       1. Check if [x] occurs in [p ...], e.g., we are doing the following:
+       1. Check if [x] occurs in [p ...], e.g., we have the following:
 
-              (λ (p ... when x ∈ p) eb)[x/ea]
+              (λ (p ... when x ∈ p) e_b)[x/e_a]
 
-          Here, we're attempting to replace occurrences of [x] with [ea] inside
-          the expression [(λ (p ... when x ∈ p) eb)]. However, since the lambda
+          Here, we're attempting to replace occurrences of [x] with [e_a] inside
+          the expression [(λ (p ... when x ∈ p) e_b)]. However, since the lambda
           is re-binding the variable we are currently substituting, there is no
           way for our outer [x] to have a collision. All [x]es inside the
           lambda's body must refer to the lambda's own binding.
@@ -599,25 +602,27 @@ let typecheck (e : exp) : ty option =
           1.1. Does [x] occur in [p ...]? Meaning we are performing something
                like the following:
 
-                   (λ (p ... when x ∈ p) eb)[x/ea]
+                   (λ (p ... when x ∈ p) e_b)[x/e_a]
 
-               Here, we're attempting to replace occurrences of [x] with [ea]
-               inside the expression [(λ (p ... when x ∈ p) eb)]. However, since
-               the lambda is re-binding the variable we are currently
+               Here, we're attempting to replace occurrences of [x] with [e_a]
+               inside the expression [(λ (p ... when x ∈ p) e_b)]. However,
+               since the lambda is re-binding the variable we are currently
                substituting, there is no way for our outer [x] to have a
                collision. All [x]es inside the lambda's body must refer to the
                lambda's own binding.
 
-          1.2. Does [x] occur in [eb]? If not, there is no collision.
+          1.2. Does [x] occur in [e_b]? If not, there is no collision.
 
-          1.3. Do any of the variables in [ea] occur in [eb]? If not, there is
+          1.3. Do any of the variables in [e_a] occur in [e_b]? If not, there is
                no collision.
 
        2. For all colliding variables:
 
-          2.1. Generate a new name guaranteed not to occur in [eb] or [ea].
+          2.1. Generate a new name guaranteed not to occur in [e_b] or [e_a].
 
-          2.2. Replace the colliding name with the new name.
+          2.2. Replace the colliding name with the new name in the parameter
+               names [p ...] and the body [e_b]. Note that we do not change the
+               argument [e_a].
 
        3. Perform the substitution.
 
