@@ -173,7 +173,9 @@
         4. Extend the [typecheck] function to handle records and projections
            according to the following rules. (We use the syntax [(T; T ...)] to
            write the type of records in these rules to make it visually distinct
-           from record expressions.)
+           from record expressions, but this syntax cannot be represented in
+           Camlrack. Therefore, you may simply use [(record T ...)] for your
+           record type syntax, or some other syntax that you enjoy.)
 
                   Γ ⊢ e_i : T_i  for all i ∈ [1 ... n]
                ------------------------------------------  T-Rec
