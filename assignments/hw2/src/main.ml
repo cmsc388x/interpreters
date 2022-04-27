@@ -991,12 +991,27 @@ module Tests = struct
       (match result with
        | None -> assert (typecheck e = None && eval input = None)
        | Some (expected_type, expected_result) ->
-         let found_type = typecheck e in
-         let mstep_res = multistep max_steps e in
-         let eval_res = eval input in
-         try (assert (found_type = Some expected_type &&
-                      mstep_res = Some expected_result &&
-                      Option.is_some eval_res && Option.get eval_res = expected_result))
+         dwarn (delay ("  expected type: '" ^ string_of_type expected_type ^ "'"));
+         let actual_type : ty option = typecheck e in
+         dwarn (delay ("  actual type: " ^
+                       match actual_type with
+                       | Some t -> "'" ^ string_of_type t ^ "'"
+                       | None -> "<none>"));
+         dwarn (delay ("  expected result: '" ^ string_of_exp expected_result ^ "'"));
+         let actual_mstep_res : exp option = multistep max_steps e in
+         dwarn (delay ("  actual multistep result: " ^
+                       match actual_mstep_res with
+                       | Some e -> "'" ^ string_of_exp e ^ "'"
+                       | None -> "<none>"));
+         let actual_eval_res : exp option = eval input in
+         dwarn (delay ("  actual eval result: " ^
+                       match actual_eval_res with
+                       | Some e -> "'" ^ string_of_exp e ^ "'"
+                       | None -> "<none>"));
+         try (assert (actual_type = Some expected_type &&
+                      actual_mstep_res = Some expected_result &&
+                      Option.is_some actual_eval_res && Option.get actual_eval_res = expected_result);
+              dwarn (delay ("test passed")))
          with Assert_failure _ ->
            print_endline ("Failed test: " ^ input);
            (match result with
@@ -1006,15 +1021,15 @@ module Tests = struct
             | None ->
               print_endline ("  Expected evaluation to fail."));
            print_endline "";
-           (match found_type with
+           (match actual_type with
             | Some ft -> print_endline ("  Found type: " ^ string_of_type ft)
             | None -> print_endline "  Could not compute a type.");
-           (match mstep_res with
+           (match actual_mstep_res with
             | Some mr -> print_endline ("  Result after " ^ string_of_int max_steps ^
                                         " steps: " ^ string_of_exp mr)
             | None -> print_endline ("  Had no result after " ^ string_of_int max_steps ^
                                      " steps."));
-           (match eval_res with
+           (match actual_eval_res with
             | Some er -> print_endline ("  Result from `eval`: " ^
                                         string_of_exp er)
             | None -> print_endline "  No result from `eval`."))
