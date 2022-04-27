@@ -63,53 +63,85 @@
         specific rules need to be handled. Look for comments marked with the
         text [TODO PART 3].
 
-        * [if] with constructor [If], representing a conditional expression. It
-          takes three arguments: a Boolean and two sub-expressions. If the
-          Boolean reduces to [Bool true], the [if] should reduce to the second
-          sub-expression. Otherwise, it should reduce to the third.
+        NOTE: You will need to update [get_bound_variables] and [substitute] for
+        both of these extensions. Your changes to these functions should be
+        fairly straightforward, since you need only call the functions
+        recursively. Since we didn't talk about either of these functions in
+        class, we describe the process below.
 
-          NOTE: The [if] form should not reduce its second and third
-          sub-expressions. Only reduce the first sub-expression, then step to
-          the un-reduced second or third sub-expression as needed.
+        If we imagine an arbitrary [exp] constructor [C] that takes [n] [exp]s
+        and one [exp list] argument (like [C (exp_1, ..., exp_n, exps)]), we
+        would need to do the following:
 
-          The typing rule for [if] looks like this:
+            * [get_bound_variables] code should create a new list that contains
+              the bound variables from each of the sub-expressions in order. You
+              may find OCaml's [@] operator useful: it appends two lists to one
+              another. So, for our arbitrary [exp] constructor from above, we
+              need to add a case that looks like:
 
-              Γ ⊢ e_c : Bool    Γ ⊢ e_t : T    Γ ⊢ e_f : T
-              --------------------------------------------  T-If
-                       Γ ⊢ (if e_c e_t e_f) : T_r
+                  | C (exp_1, ..., exp_n, exps) ->
+                    get_bound_variables exp_1 @ ... @ get_bound_variables exp_n
+                    @ (List.concat_map get_bound_variables exps)
 
-          and the small-step reduction rules look like this:
+            * [substitute] code should re-create the constructor we are given,
+              but with the substitution performed in each of the the sub-
+              expressions. So for our arbitrary [exp] constructor:
 
-                           e_c ⟶ e_c'
-              --------------------------------------  E-IfStep
-              (if e_c e_t e_f) ⟶ (if e_c' e_t e_f)
+                  | C (exp_1, ..., exp_n, exps) ->
+                    C (substitute arg for_name exp_1,
+                       ...,
+                       substitute arg for_name exp_n,
+                       List.map (substitute arg for_name) exps)
 
-              -----------------------  E-IfTrue
-              (if #t e_t e_f) ⟶ e_t
+        The two extensions you must implement are:
 
-              -----------------------  E-IfFalse
-              (if #f e_t e_f) ⟶ e_f
+        1. [if] with constructor [If], representing a conditional expression. It
+           takes three arguments: a Boolean and two sub-expressions. If the
+           Boolean reduces to [Bool true], the [if] should reduce to the second
+           sub-expression. Otherwise, it should reduce to the third.
 
-        * [fix] with constructor [Fix], a primitive form that takes a lambda as
-          argument and performs a special substitution that allows for
-          simulating a recursive binding.
+           NOTE: The [if] form should not reduce its second and third
+           sub-expressions. Only reduce the first sub-expression, then step to
+           the un-reduced second or third sub-expression as needed.
 
-          The typing rule for [fix] looks like this:
+           The typing rule for [if] looks like this:
 
-              Γ ⊢ e : ((T) -> T)
-              ------------------  T-Fix
-               Γ ⊢ (fix e) : T
+               Γ ⊢ e_c : Bool    Γ ⊢ e_t : T    Γ ⊢ e_f : T
+               --------------------------------------------  T-If
+                        Γ ⊢ (if e_c e_t e_f) : T_r
 
-          and the small-step reduction relation looks like this:
+           and the small-step reduction rules look like this:
 
-                    e ⟶ e'
-              --------------------  E-FixStep
-              (fix e) ⟶ (fix e')
+                            e_c ⟶ e_c'
+               --------------------------------------  E-IfStep
+               (if e_c e_t e_f) ⟶ (if e_c' e_t e_f)
 
-              ----------------------------------------------------  E-Fix
-              (fix (λ ((x : T)) e)) ⟶ e[x/(fix (λ ((x : T)) e))]
+               -----------------------  E-IfTrue
+               (if #t e_t e_f) ⟶ e_t
 
-          Hint: use the [substitute] function to perform substitution.
+               -----------------------  E-IfFalse
+               (if #f e_t e_f) ⟶ e_f
+
+        2. [fix] with constructor [Fix], a primitive form that takes a lambda as
+           argument and performs a special substitution that allows for
+           simulating a recursive binding.
+
+           The typing rule for [fix] looks like this:
+
+               Γ ⊢ e : ((T) -> T)
+               ------------------  T-Fix
+                Γ ⊢ (fix e) : T
+
+           and the small-step reduction relation looks like this:
+
+                     e ⟶ e'
+               --------------------  E-FixStep
+               (fix e) ⟶ (fix e')
+
+               ----------------------------------------------------  E-Fix
+               (fix (λ ((x : T)) e)) ⟶ e[x/(fix (λ ((x : T)) e))]
+
+           Hint: use the [substitute] function to perform substitution.
 
     PART 4: Extend the language to include indexed records.
 
@@ -120,7 +152,7 @@
         as projection to any of those fields.
 
         NOTE: There is only one [TODO PART 4] comment, which corresponds to task
-        4.6. The rest of what you should do is described below, and you must
+        4.7. The rest of what you should do is described below, and you must
         find where to modify code.
 
         1. Add a [Record] constructor to the definitions of [ty], [value], and
@@ -151,7 +183,13 @@
                -------------------------------------------  T-Proj
                            Γ ⊢ (proj i e) : T_i
 
-        5. Extend the [step] function to handle records and projections
+        5. Extend the [get_bound_variables] and [substitute] functions. These
+           should only require that you add rules for the [exp] forms you've
+           added, and you ought to just call the functions recursively in a
+           manner similar to the other forms already present. These functions
+           should not require significant efforts on your part.
+
+        6. Extend the [step] function to handle records and projections
            according to the following rules.
 
                                       e_1 ⟶ e_1'
@@ -166,7 +204,7 @@
                -------------------------------------  E-Proj
                (proj i (record v_1 ... v_n)) ⟶ v_i
 
-        6. Add tests in the [part4_tests] list in the [Tests] submodule! (You
+        7. Add tests in the [part4_tests] list in the [Tests] submodule! (You
            will need to fix the first test, since the correct result is
            dependent on how you implement your records.)
 
@@ -507,8 +545,6 @@ let typecheck (e : exp) : ty option =
                       ║                                 ║
                       ╚═════════════════════════════════╝
 
-   NOTE: You should never change anything in this section.
-
    When performing substitution for application forms, a problem that can happen
    is you accidentally "capture" a variable that was meant to belong to a
    different lambda. For example, considering the following term:
@@ -591,6 +627,7 @@ let rec get_bound_variables (e : exp) : variable list =
      | Lam (params, body) -> List.map fst params @ get_bound_variables body
      | _ -> [])
   | Var x -> [x]
+  (* TODO PART 3 *)
   | App (ef, args) ->
     get_bound_variables ef @ (List.concat_map get_bound_variables args)
 
@@ -706,6 +743,7 @@ let rec substitute (arg : exp) (for_name : variable) (in_exp : exp) : exp =
     else in_exp
   (* For all other forms, we need only perform the substitution in the sub-
      expressions of the current expression. *)
+  (* TODO PART 3 *)
   | App (ef, args) ->
     App (substitute arg for_name ef,
          List.map (substitute arg for_name) args)
