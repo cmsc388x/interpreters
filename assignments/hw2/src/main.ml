@@ -155,10 +155,11 @@
         4.7. The rest of what you should do is described below, and you must
         find where to modify code.
 
-        1. Add a [Record] constructor to the definitions of [ty], [value], and
-           [exp]. (You will need all three, since records can also be values if
-           their sub-components are fully reduced.) Give it appropriate fields
-           to suit its needs.
+        1. Add a [Record] constructor to the definitions of [ty] and [exp], and
+           a [RecordValue] constructor to [value]. (You will need all three,
+           since records can also be values if their sub-components are fully
+           reduced.) Add a [Proj] constructor to [exp]. Give them appropriate
+           fields to suit their needs as described below.
 
         2. Extend the [string_of_type], [string_of_value], and [string_of_exp]
            functions to handle the new forms.
@@ -168,7 +169,8 @@
            [(proj i e)] for projection, where [i] is a positive integer. Note
            that this integer should not be an [Int] in the language, because we
            need to be able to read it during type-checking. (I.e., you will have
-           to check that the integer [i] is valid during parsing!)
+           to check that the integer [i] is positive during parsing. If it
+           isn't, raise an exception using [failwith]!)
 
         4. Extend the [typecheck] function to handle records and projections
            according to the following rules. (We use the syntax [(T; T ...)] to
@@ -185,11 +187,11 @@
                -------------------------------------------  T-Proj
                            Γ ⊢ (proj i e) : T_i
 
-        5. Extend the [get_bound_variables] and [substitute] functions. These
-           should only require that you add rules for the [exp] forms you've
-           added, and you ought to just call the functions recursively in a
-           manner similar to the other forms already present. These functions
-           should not require significant efforts on your part.
+        5. Extend the [get_bound_variables] and [substitute] functions. For the
+           most part, you should only need to call the functions recursively in
+           a manner similar to the other forms already present. However, there
+           may be some opportunities for making design decisions. You can decide
+           how to handle those as long as the semantics are preserved!
 
         6. Extend the [step] function to handle records and projections
            according to the following rules.
