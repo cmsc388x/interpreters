@@ -863,7 +863,8 @@ let step (e : exp) : exp option =
        (* Primitive function application. *)
        (* TODO PART 1: Add rules for the original primitive functions here. *)
        | Add -> step_primitive_binary_function Add vargs int_extract int_extract (fun a b -> Int (a + b))
-       (* TODO PART 2: Add rules for the new primitive functions here.
+       (* TODO PART 2: Add rules for the new primitive functions here. *)
+       (* TODO PART 3
 
           NOTE: There is no [step_primitive_ternary_function] function to use
           with your [if] form. You can choose to implement one, but you
