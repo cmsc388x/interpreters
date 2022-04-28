@@ -844,7 +844,12 @@ let step (e : exp) : exp option =
     | Val _ -> e
     (* Variables are not allowed to be free. *)
     | Var x -> failwith ("step: invalid reference to free variable '" ^ x ^ "'")
-    (* TODO PART 3 *)
+    (* TODO PART 3
+
+       NOTE: There is no [step_primitive_ternary_function] function to use
+       with your [if] form. You can choose to implement one, but you
+       certainly don't have to if you'd rather just implement it here
+       directly. **)
     (* Applications are the tricky part. *)
     | App (Val vf, vargs) when List.for_all is_value vargs ->
       (match vf with
@@ -864,12 +869,6 @@ let step (e : exp) : exp option =
        (* TODO PART 1: Add rules for the original primitive functions here. *)
        | Add -> step_primitive_binary_function Add vargs int_extract int_extract (fun a b -> Int (a + b))
        (* TODO PART 2: Add rules for the new primitive functions here. *)
-       (* TODO PART 3
-
-          NOTE: There is no [step_primitive_ternary_function] function to use
-          with your [if] form. You can choose to implement one, but you
-          certainly don't have to if you'd rather just implement it here
-          directly. *)
        (* Anything else is undefined! *)
        | _ -> failwith ("step: invalid subject of application: '" ^ string_of_value vf ^ "'"))
     | App (Val vf, args) -> App (Val vf, step_args args)
