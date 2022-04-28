@@ -844,12 +844,7 @@ let step (e : exp) : exp option =
     | Val _ -> e
     (* Variables are not allowed to be free. *)
     | Var x -> failwith ("step: invalid reference to free variable '" ^ x ^ "'")
-    (* TODO PART 3
-
-       NOTE: There is no [step_primitive_ternary_function] function to use
-       with your [if] form. You can choose to implement one, but you
-       certainly don't have to if you'd rather just implement it here
-       directly. **)
+    (* TODO PART 3 *)
     (* Applications are the tricky part. *)
     | App (Val vf, vargs) when List.for_all is_value vargs ->
       (match vf with
