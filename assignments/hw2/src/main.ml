@@ -108,7 +108,7 @@
 
                Γ ⊢ e_c : Bool    Γ ⊢ e_t : T    Γ ⊢ e_f : T
                --------------------------------------------  T-If
-                        Γ ⊢ (if e_c e_t e_f) : T_r
+                        Γ ⊢ (if e_c e_t e_f) : T
 
            and the small-step reduction rules look like this:
 
